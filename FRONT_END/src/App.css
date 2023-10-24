@@ -36,3 +36,28 @@
     transform: rotate(360deg);
   }
 }
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  background-color: #dd4242;
+  color: white;
+}
+tbody tr:nth-child(odd) {
+  background-color: #f2f2f2; 
+}
+tbody tr:nth-child(even) {
+  background-color: #ffffff; 
+}
+:where(.css-dev-only-do-not-override-xu9wm8).ant-input{
+  height: 35px;
+}
+:where(.css-dev-only-do-not-override-xu9wm8).ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+  height: 35px;
+}
+
+:where(.css-dev-only-do-not-override-xu9wm8).ant-form-item .ant-form-item-label >label {
+  font-weight: bold;
+}
+:where(.css-dev-only-do-not-override-xu9wm8).ant-card-bordered {
+  border: 1px solid #f0f0f0;
+  border-top: 5px solid rgb(206, 17, 17);
+}

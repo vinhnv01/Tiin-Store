@@ -7,13 +7,11 @@ import Logo from "../../assets/logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBoxesPacking,
-  faCartPlus,
   faChartLine,
   faKey,
   faMoneyBills,
   faShop,
   faTags,
-  faUserAlt,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
 import SubMenu from "antd/es/menu/SubMenu";
@@ -26,7 +24,7 @@ const DashboardCensor = ({ children }) => {
   return (
     <Layout className="layout-censor">
       <Sider trigger={null} collapsible collapsed={collapsed} width={225}>
-        <Link to="/dashboard">
+        <Link to="/dashboard-management">
           <div className="logo">
             <img src={Logo} className="logo-content" alt="Logo" />
           </div>
@@ -40,7 +38,7 @@ const DashboardCensor = ({ children }) => {
               <FontAwesomeIcon icon={faChartLine} style={{ color: "white" }} />
             }
           >
-            <Link to="/dashboard" style={{ color: "white" }}>
+            <Link to="/dashboard-management" style={{ color: "white" }}>
               Thống Kê
             </Link>
           </Menu.Item>
@@ -49,7 +47,7 @@ const DashboardCensor = ({ children }) => {
             className="menu-item"
             icon={<FontAwesomeIcon icon={faShop} style={{ color: "white" }} />}
           >
-            <Link to="/dashboard" style={{ color: "white" }}>
+            <Link to="/bill-management" style={{ color: "white" }}>
               Bán Hàng Tại Quầy
             </Link>
           </Menu.Item>
@@ -76,7 +74,7 @@ const DashboardCensor = ({ children }) => {
             style={{ color: "white" }}
           >
             <Menu.Item key="4.0">
-              <Link to="/product-management">Sản Phẩm</Link>
+              <Link to="/product-detail-management">Sản Phẩm</Link>
             </Menu.Item>
             <Menu.Item key="4.1">
               <Link to="/category-management">Thể Loại</Link>
@@ -118,10 +116,10 @@ const DashboardCensor = ({ children }) => {
             style={{ color: "white" }}
           >
             <Menu.Item key="7.0">
-              <Link to="/product-management">Nhân viên</Link>
+              <Link to="/employee-management">Nhân viên</Link>
             </Menu.Item>
             <Menu.Item key="7.1">
-              <Link to="/category-management">Khách hàng</Link>
+              <Link to="/custumer-management">Khách hàng</Link>
             </Menu.Item>
           </SubMenu>
         </Menu>

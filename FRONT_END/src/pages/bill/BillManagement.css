@@ -1,0 +1,50 @@
+
+
+.body-bill {
+    background-color: white;
+    width: 100%;
+    height: 50vh;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+}
+
+.body-bill::before {
+    content: "";
+    background-image: url("https://taphoa.cz/static/media/cart-empty-img.8b677cb3.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 35%;
+    height: 100%;
+}
+.text-bill-null{
+    text-align: "center" ;
+    position: absolute;
+    top: "50%";
+    left: "50%";
+    transform: "translate(-50%, -50%)";
+    margin-top : 20%;
+}
+
+.content-oder{
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 20px; 
+}
+
+.btn-creat-bill{
+    height: 40px;
+    margin-top: 25px;
+    margin-bottom: 30px;
+}
+
+.btn-creat-bill-list{
+    height: 40px;
+    margin-bottom: 20px;
+}
+
+.ant-notification-notice {
+    height: auto;
+    max-height: 200px; 
+}
