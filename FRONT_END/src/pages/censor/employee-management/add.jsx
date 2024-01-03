@@ -7,12 +7,15 @@ import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import QRScannerModal from "../../../util/QR-code/BarcodeScanner ";
 import showConfirmationModal from "../../../util/modal-confirm/ModalConfirm";
 import { AddressApi } from "../../../apis/address/address.api";
+import { EmployeeAPI } from "../../../apis/user/Employee.api";
+import { useNavigate } from "react-router-dom";
 export default function AddEmployeeManagement() {
   const [form] = Form.useForm();
   const [fileImage, setFileIamge] = useState(null);
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
+  const nav = useNavigate();
 
   const handleFileUpload = (fileData) => {
     setFileIamge(fileData);
@@ -34,6 +37,10 @@ export default function AddEmployeeManagement() {
     });
   };
 
+  const [province, setProvince] = useState(null);
+  const [district, setDistrict] = useState(null);
+  const [ward, setWard] = useState(null);
+
   const handleProvinceChange = (value, valueProvince) => {
     form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
@@ -41,6 +48,7 @@ export default function AddEmployeeManagement() {
         setListDistricts(res.data.data);
       }
     );
+    setProvince(valueProvince);
   };
 
   const handleDistrictChange = (value, valueDistrict) => {
@@ -48,10 +56,12 @@ export default function AddEmployeeManagement() {
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
       setListWard(res.data.data);
     });
+    setDistrict(valueDistrict);
   };
 
   const handleWardChange = (value, valueWard) => {
     form.setFieldsValue({ wardCode: valueWard.valueWard });
+    setWard(valueWard);
   };
 
   useEffect(() => {
@@ -75,10 +85,28 @@ export default function AddEmployeeManagement() {
         if (fileImage === null) {
           message.error("Vui lòng chọn ảnh đại diện.");
         }
-
-        console.log(values);
+        const data = {
+          ...values,
+          dateOfBirth: values.birthday
+            ? new Date(values.birthday).getTime()
+            : null,
+          provinceId: province.key,
+          districtId: district.key,
+          wardId: ward.key,
+        };
+        const formData = new FormData();
+        formData.append(`file`, fileImage);
+        formData.append("request", JSON.stringify(data));
+        EmployeeAPI.create(formData)
+          .then((result) => {
+            message.success("Thêm nhân viên thành công.");
+            nav("/employee-management");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
-      .catch((error) => {
+      .catch(() => {
         message.error("Vui lòng điền đủ thông tin vào tất cả các trường.");
       });
   };
@@ -176,7 +204,7 @@ export default function AddEmployeeManagement() {
                     />
                   </Form.Item>
                   <Form.Item
-                    name="card"
+                    name="citizenIdentity"
                     label="Căn cước"
                     tooltip="Căn cước công dân của bạn là gì?"
                     rules={[
@@ -211,8 +239,8 @@ export default function AddEmployeeManagement() {
                   >
                     <Select defaultValue={""}>
                       <Select.Option value="">Chọn giới tính</Select.Option>
-                      <Select.Option value="NAM">Nam</Select.Option>
-                      <Select.Option value="NU">Nữ</Select.Option>
+                      <Select.Option value="true">Nam</Select.Option>
+                      <Select.Option value="false">Nữ</Select.Option>
                     </Select>
                   </Form.Item>
                   <Form.Item

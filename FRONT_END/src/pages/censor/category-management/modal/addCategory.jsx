@@ -1,13 +1,30 @@
-import { Col, Form, Input, Modal, Row, message } from "antd";
+import { Button, Col, Form, Input, Modal, Row, message } from "antd";
+import { CategoryAPI } from "../../../../apis/category/category.api";
+import { useAppDispatch } from "../../../../app/hook";
+import { CreateCategory } from "../../../../app/reducer/Category.reducer";
 
-export default function AddCategory({ visible, onCancel }) {
+export default function ModalAddCategory({ visible, onCancel }) {
   const [form] = Form.useForm();
+  const dispatch = useAppDispatch();
 
   const handleOk = () => {
     form
       .validateFields()
       .then((values) => {
-        console.log(values);
+        const category = {
+          ...values,
+          status: "DANG_SU_DUNG",
+        };
+        CategoryAPI.create(category)
+          .then((res) => {
+            dispatch(CreateCategory(res.data.data));
+            message.success("Thêm thành công");
+            form.resetFields();
+            onCancel();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       })
       .catch((error) => {});
   };
@@ -18,6 +35,14 @@ export default function AddCategory({ visible, onCancel }) {
         open={visible}
         onOk={handleOk}
         onCancel={onCancel}
+        footer={[
+          <Button key="cancel" onClick={onCancel}>
+            Hủy
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleOk}>
+            Thêm
+          </Button>,
+        ]}
       >
         <Form form={form}>
           {" "}

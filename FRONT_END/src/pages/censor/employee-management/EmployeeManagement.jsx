@@ -22,16 +22,35 @@ import {
   Tooltip,
 } from "antd";
 import showConfirmationModal from "../../../util/modal-confirm/ModalConfirm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import "./EmployeeManagement.model.css";
 
+import { useAppDispatch } from "../../../app/hook";
+import { EmployeeAPI } from "../../../apis/user/Employee.api";
+import { SetEmployee } from "../../../app/reducer/Employee.reducer";
+
 export default function EmployeeManagement() {
   const [form] = Form.useForm();
   const nav = useNavigate();
+  const dispatch = useAppDispatch();
   const [ageMin, setAgeMin] = useState(0);
   const [ageMax, setAgeMax] = useState(100);
+
+  const calculateAge = (birthdateInMillis) => {
+    const birthDateObject = new Date(birthdateInMillis);
+    const currentDate = new Date();
+    const age = currentDate.getFullYear() - birthDateObject.getFullYear();
+    if (
+      currentDate.getMonth() < birthDateObject.getMonth() ||
+      (currentDate.getMonth() === birthDateObject.getMonth() &&
+        currentDate.getDate() < birthDateObject.getDate())
+    ) {
+      return age - 1;
+    }
+    return age;
+  };
 
   const [search, setSearch] = useState({
     fullName: "",
@@ -50,8 +69,8 @@ export default function EmployeeManagement() {
     },
     {
       title: " Ảnh",
-      dataIndex: "image",
-      key: "image",
+      dataIndex: "avata",
+      key: "avata",
       align: "center",
       render: (text) => (
         <Image
@@ -69,15 +88,22 @@ export default function EmployeeManagement() {
       render: (text) => <span>{text}</span>,
     },
     {
-      title: "Tuổi",
-      dataIndex: "age",
-      key: "age",
-      align: "center",
+      title: <div style={{ textAlign: "center" }}>Email</div>,
+      dataIndex: "email",
+      key: "email",
+      render: (text) => <span>{text}</span>,
     },
     {
-      title: "Địa chỉ",
-      dataIndex: "address",
-      key: "address",
+      title: "Tuổi",
+      dataIndex: "dateOfBirth",
+      key: "dateOfBirth",
+      align: "center",
+      render: (text) => calculateAge(text),
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
       align: "center",
     },
     {
@@ -88,7 +114,7 @@ export default function EmployeeManagement() {
       align: "center",
       render: (text) => (
         <Tag
-          color={text === "DANG_HOAT_DONG" ? "green" : "red"}
+          color={text === "DANG_SU_DUNG" ? "green" : "red"}
           style={{
             fontSize: "14px",
             padding: "5px 10px",
@@ -97,7 +123,7 @@ export default function EmployeeManagement() {
             textAlign: "center",
           }}
         >
-          {text === "DANG_HOAT_DONG" ? "Đang hoạt động" : "Ngừng hoạt động"}
+          {text === "DANG_SU_DUNG" ? "Đang hoạt động" : "Ngừng hoạt động"}
         </Tag>
       ),
     },
@@ -107,6 +133,20 @@ export default function EmployeeManagement() {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
+          <Tooltip title="Sửa">
+            <Button
+              onClick={() => {
+                nav(`/update-employee-management/${record.idUser}`);
+              }}
+              style={{
+                backgroundColor: "#0066CC",
+                color: "white",
+                height: "35px",
+              }}
+            >
+              <FontAwesomeIcon icon={faPenToSquare} />
+            </Button>
+          </Tooltip>
           <Tooltip title="Hủy tài khoản">
             <Button
               style={{
@@ -126,61 +166,27 @@ export default function EmployeeManagement() {
               <FontAwesomeIcon icon={faTrash} />
             </Button>
           </Tooltip>
-          <Tooltip title="Sửa">
-            <Button
-              onClick={() => {
-                nav(`/update-employee-management/${record.id}`);
-              }}
-              style={{
-                backgroundColor: "#0066CC",
-                color: "white",
-                height: "35px",
-              }}
-            >
-              <FontAwesomeIcon icon={faPenToSquare} />
-            </Button>
-          </Tooltip>
         </Space>
       ),
     },
   ];
 
-  const data = [
-    {
-      stt: 1,
-      id: "1",
-      fullName: "John Brown",
-      image:
-        "https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      status: "DANG_HOAT_DONG",
-    },
-    {
-      stt: 2,
-      id: "2",
-      fullName: "John Brown 2",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXsJKebNLSLsSC0PY6zUagtfpuYhkxk9jJYw&usqp=CAU",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      status: "NGUNG_HOAT_DONG",
-    },
-    {
-      stt: 2,
-      id: "3",
-      fullName: "John Brown 3",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQZljZ5zv6I2nQt902zFQrCZcHeZOQ5t9pe5Ky7Mpxa0aOPeYaMBpk2QdjSi27IKRK2w0&usqp=CAU",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      status: "NGUNG_HOAT_DONG",
-    },
-  ];
-
-  const handleUpdate = (data) => {
-    console.log(data);
+  const [data, setData] = useState([]);
+  const loadData = () => {
+    EmployeeAPI.fetchAll()
+      .then((res) => {
+        dispatch(SetEmployee(res.data.data));
+        setData(res.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   const hanldeDelete = (data) => {
     console.log(data);
@@ -290,7 +296,7 @@ export default function EmployeeManagement() {
           <Row justify="end" align="middle">
             <Button
               style={{
-                width: "100px",
+                width: "110px",
                 height: "40px",
                 margin: "0 10px 10px 10px ",
                 backgroundColor: "#3366CC",
@@ -300,11 +306,16 @@ export default function EmployeeManagement() {
                 nav("/create-employee-management");
               }}
             >
-              <FontAwesomeIcon icon={faPlus} />
+              <FontAwesomeIcon icon={faPlus} style={{ marginRight: "5px" }} />
               Thêm mới
             </Button>
           </Row>
-          <Table columns={columns} dataSource={data} rowKey="id" />
+          <Table
+            columns={columns}
+            dataSource={data}
+            rowKey="id"
+            pagination={{ pageSize: 5 }}
+          />
         </Card>
       </Form>
     </div>

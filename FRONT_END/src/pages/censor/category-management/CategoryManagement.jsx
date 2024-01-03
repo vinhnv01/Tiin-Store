@@ -4,7 +4,6 @@ import {
   faLayerGroup,
   faPenToSquare,
   faPlus,
-  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -20,21 +19,24 @@ import {
   Tag,
   Tooltip,
 } from "antd";
-import showConfirmationModal from "../../../util/modal-confirm/ModalConfirm";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import "./CategoryManagement.model.css";
-import moment from "moment";
-import AddCategory from "./modal/addCategory";
 import UpdateCategory from "./modal/updateCategory";
+import { CategoryAPI } from "../../../apis/category/category.api";
+import ConvertLongToDate from "../../../util/date/ConverLongToDate";
+import { useAppDispatch, useAppSelector } from "../../../app/hook";
+import {
+  GetCategory,
+  SetCategory,
+} from "../../../app/reducer/Category.reducer";
+import ModalAddCategory from "./modal/addCategory";
 
 export default function CategoryManagement() {
   const [form] = Form.useForm();
+  const dispatch = useAppDispatch();
   const [search, setSearch] = useState({
     name: "",
-    fomDate: "",
-    toDate: "",
     status: "",
   });
 
@@ -46,23 +48,26 @@ export default function CategoryManagement() {
       align: "center",
     },
     {
-      title: "Tên thể loại",
+      title: <div style={{ textAlign: "center" }}>Tên thể loại</div>,
       dataIndex: "name",
       key: "name",
-      align: "center",
       render: (text) => <span>{text}</span>,
     },
     {
       title: "Ngày tạo",
-      dataIndex: "fromDate",
-      key: "fromDate",
+      dataIndex: "createdDate",
+      key: "createdDate",
       align: "center",
+      render: (_, record) => <ConvertLongToDate long={record.createdDate} />,
     },
     {
       title: "Ngày cập nhập",
-      dataIndex: "toDate",
-      key: "toDate",
+      dataIndex: "lastModifiedDate",
+      key: "lastModifiedDate",
       align: "center",
+      render: (_, record) => (
+        <ConvertLongToDate long={record.lastModifiedDate} />
+      ),
     },
     {
       title: "Trạng thái",
@@ -72,7 +77,7 @@ export default function CategoryManagement() {
       align: "center",
       render: (text) => (
         <Tag
-          color={text === "DANG_HOAT_DONG" ? "green" : "red"}
+          color={text === "DANG_SU_DUNG" ? "green" : "red"}
           style={{
             fontSize: "14px",
             padding: "5px 10px",
@@ -81,7 +86,7 @@ export default function CategoryManagement() {
             textAlign: "center",
           }}
         >
-          {text === "DANG_HOAT_DONG" ? "Đang sử dụng" : "Ngừng sử dụng "}
+          {text === "DANG_SU_DUNG" ? "Đang sử dụng" : "Ngừng sử dụng "}
         </Tag>
       ),
     },
@@ -91,6 +96,17 @@ export default function CategoryManagement() {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
+          <Tooltip title="Chi tiết thể loại">
+            <Button
+              style={{
+                backgroundColor: "#FF9900",
+                color: "white",
+                height: "35px",
+              }}
+            >
+              <FontAwesomeIcon icon={faEye} />
+            </Button>
+          </Tooltip>
           <Tooltip title="Sửa">
             <Button
               onClick={() => handleUpdateClick(record)}
@@ -103,60 +119,26 @@ export default function CategoryManagement() {
               <FontAwesomeIcon icon={faPenToSquare} />
             </Button>
           </Tooltip>
-          <Tooltip title="Hủy">
-            <Button
-              style={{
-                backgroundColor: "red",
-                color: "white",
-                height: "35px",
-              }}
-              onClick={() => {
-                showConfirmationModal(
-                  "Bạn có chắc muốn hủy trạng thái " +
-                    record.name +
-                    " không ? ",
-                  () => hanldeDelete(record)
-                );
-              }}
-            >
-              <FontAwesomeIcon icon={faTrash} />
-            </Button>
-          </Tooltip>
         </Space>
       ),
     },
   ];
 
-  const data = [
-    {
-      stt: 1,
-      id: "1",
-      name: "John Brown",
-      fromDate: moment(948472400000).format("DD-MM-YYYY"),
-      toDate: moment(988472400000).format("DD-MM-YYYY"),
-      status: "DANG_HOAT_DONG",
-    },
-    {
-      stt: 2,
-      id: "2",
-      name: "John Brown na",
-      fromDate: moment(948472400000).format("DD-MM-YYYY"),
-      toDate: moment(988472400000).format("DD-MM-YYYY"),
-      status: "NGUNG_HOAT_DONG",
-    },
-    {
-      stt: 3,
-      id: "3",
-      name: "John Brown vinh",
-      fromDate: moment(948472400000).format("DD-MM-YYYY"),
-      toDate: moment(988472400000).format("DD-MM-YYYY"),
-      status: "DANG_HOAT_DONG",
-    },
-  ];
-
-  const hanldeDelete = (data) => {
-    console.log(data);
+  const data = useAppSelector(GetCategory);
+  const loadData = () => {
+    CategoryAPI.fetchAll()
+      .then((res) => {
+        dispatch(SetCategory(res.data.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   const hanldeClear = () => {
     form.resetFields();
@@ -166,10 +148,7 @@ export default function CategoryManagement() {
     const values = form.getFieldsValue();
     setSearch({
       fullName: values.fullName,
-      phoneNumber: values.phoneNumber,
       status: values.status,
-      ageMin: values.age[0],
-      ageMax: values.age[1],
     });
   };
 
@@ -262,7 +241,7 @@ export default function CategoryManagement() {
             <Tooltip title="Thêm mới">
               <Button
                 style={{
-                  width: "100px",
+                  width: "110px",
                   height: "40px",
                   margin: "0 10px 10px 10px ",
                   backgroundColor: "#3366CC",
@@ -270,13 +249,18 @@ export default function CategoryManagement() {
                 }}
                 onClick={handleAddClick}
               >
-                <FontAwesomeIcon icon={faPlus} />
+                <FontAwesomeIcon icon={faPlus} style={{ marginRight: "5px" }} />
                 Thêm mới
               </Button>
             </Tooltip>
-            <AddCategory visible={openAdd} onCancel={handleCancel} />
+            <ModalAddCategory visible={openAdd} onCancel={handleCancel} />
           </Row>
-          <Table columns={columns} dataSource={data} rowKey="id" />
+          <Table
+            columns={columns}
+            dataSource={data}
+            rowKey="id"
+            pagination={{ pageSize: 5 }}
+          />
         </Card>
         <UpdateCategory
           category={idCategory}

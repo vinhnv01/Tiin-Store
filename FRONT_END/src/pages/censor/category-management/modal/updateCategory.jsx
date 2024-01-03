@@ -89,10 +89,10 @@ export default function UpdateCategory({ category, visible, onCancel }) {
               >
                 <Select defaultValue={""} style={{ textAlign: "center" }}>
                   <Select.Option value="">Chọn trạng thái</Select.Option>
-                  <Select.Option value="DANG_HOAT_DONG">
+                  <Select.Option value="DANG_SU_DUNG">
                     Đang sử dung
                   </Select.Option>
-                  <Select.Option value="NGUNG_HOAT_DONG">
+                  <Select.Option value="KHONG_SU_DUNG">
                     Ngừng sử dụng
                   </Select.Option>
                 </Select>

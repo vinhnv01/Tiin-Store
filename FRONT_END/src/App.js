@@ -14,11 +14,24 @@ import AddCustumerManagement from "./pages/censor/custumer-management/add";
 import UpdateEmployeeManagement from "./pages/censor/employee-management/update";
 import UpdateCustumerManagement from "./pages/censor/custumer-management/update";
 import CategoryManagement from "./pages/censor/category-management/CategoryManagement";
-import BillManagement from "./pages/bill/BillManagement";
+import BillManagement from "./pages/censor/bill/BillManagement";
+import { GetLoading } from "./app/reducer/Loading.reducer";
+import { useAppSelector } from "./app/hook";
+import loading from "./../src/assets/s_discount_icon.png";
 
 function App() {
+  const isLoading = useAppSelector(GetLoading);
+
   return (
     <div className="App">
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-logo">
+            <img src={loading} alt="Logo" />
+          </div>
+        </div>
+      )}
+
       <BrowserRouter basename={AppConfig.routerBase}>
         <Suspense>
           <Routes>
