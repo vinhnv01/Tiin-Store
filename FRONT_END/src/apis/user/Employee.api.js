@@ -17,6 +17,22 @@ export class EmployeeAPI {
     });
   };
 
+  static update = (data) => {
+    return requestAdmin({
+      method: "PUT",
+      url: `/admin/employee`,
+      data: data,
+    });
+  };
+
+  static updateStatus = (data) => {
+    return requestAdmin({
+      method: "POST",
+      url: `/admin/employee/update`,
+      data: data,
+    });
+  };
+
   static getOneByIdUser = (id) => {
     return requestAdmin({
       method: "GET",

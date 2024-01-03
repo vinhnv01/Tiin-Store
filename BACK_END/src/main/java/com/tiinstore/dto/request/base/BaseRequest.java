@@ -1,4 +1,4 @@
-package com.tiinstore.dto.request.category;
+package com.tiinstore.dto.request.base;
 
 import com.tiinstore.infrastructure.constant.Status;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryRequest {
+public class BaseRequest {
 
     private String name;
 

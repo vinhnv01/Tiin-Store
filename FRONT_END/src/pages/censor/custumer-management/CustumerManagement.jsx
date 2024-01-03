@@ -20,18 +20,35 @@ import {
   Table,
   Tag,
   Tooltip,
+  message,
 } from "antd";
 import showConfirmationModal from "../../../util/modal-confirm/ModalConfirm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import "./CustumerManagement.model.css";
+import { useAppDispatch } from "../../../app/hook";
+import { CustomerAPI } from "../../../apis/user/Customer.api";
 
 export default function CustumerManagement() {
   const [form] = Form.useForm();
   const nav = useNavigate();
+  const dispatch = useAppDispatch();
   const [ageMin, setAgeMin] = useState(0);
   const [ageMax, setAgeMax] = useState(100);
+
+  const calculateAge = (birthdateInMillis) => {
+    const birthDateObject = new Date(birthdateInMillis);
+    const currentDate = new Date();
+    const age = currentDate.getFullYear() - birthDateObject.getFullYear();
+    if (
+      currentDate.getMonth() < birthDateObject.getMonth() ||
+      (currentDate.getMonth() === birthDateObject.getMonth() &&
+        currentDate.getDate() < birthDateObject.getDate())
+    ) {
+      return age - 1;
+    }
+    return age;
+  };
 
   const [search, setSearch] = useState({
     fullName: "",
@@ -50,8 +67,8 @@ export default function CustumerManagement() {
     },
     {
       title: " Ảnh",
-      dataIndex: "image",
-      key: "image",
+      dataIndex: "avata",
+      key: "avata",
       align: "center",
       render: (text) => (
         <Image
@@ -63,21 +80,35 @@ export default function CustumerManagement() {
       ),
     },
     {
+      title: "Mã khách hàng",
+      dataIndex: "code",
+      key: "code",
+      align: "center",
+      render: (text) => <span>{text}</span>,
+    },
+    {
       title: <div style={{ textAlign: "center" }}>Họ và tên</div>,
       dataIndex: "fullName",
       key: "fullName",
       render: (text) => <span>{text}</span>,
     },
     {
-      title: "Tuổi",
-      dataIndex: "age",
-      key: "age",
-      align: "center",
+      title: <div style={{ textAlign: "center" }}>Email</div>,
+      dataIndex: "email",
+      key: "email",
+      render: (text) => <span>{text}</span>,
     },
     {
-      title: "Địa chỉ",
-      dataIndex: "address",
-      key: "address",
+      title: "Tuổi",
+      dataIndex: "dateOfBirth",
+      key: "dateOfBirth",
+      align: "center",
+      render: (text) => calculateAge(text),
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
       align: "center",
     },
     {
@@ -88,7 +119,7 @@ export default function CustumerManagement() {
       align: "center",
       render: (text) => (
         <Tag
-          color={text === "DANG_HOAT_DONG" ? "green" : "red"}
+          color={text === "DANG_SU_DUNG" ? "green" : "red"}
           style={{
             fontSize: "14px",
             padding: "5px 10px",
@@ -97,7 +128,7 @@ export default function CustumerManagement() {
             textAlign: "center",
           }}
         >
-          {text === "DANG_HOAT_DONG" ? "Đang hoạt động" : "Ngừng hoạt động"}
+          {text === "DANG_SU_DUNG" ? "Đang hoạt động" : "Ngừng hoạt động"}
         </Tag>
       ),
     },
@@ -107,29 +138,10 @@ export default function CustumerManagement() {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Hủy tài khoản">
-            <Button
-              style={{
-                backgroundColor: "red",
-                color: "white",
-                height: "35px",
-              }}
-              onClick={() => {
-                showConfirmationModal(
-                  "Bạn có chắc muốn xóa nhân viên " +
-                    record.fullName +
-                    " không ? ",
-                  () => hanldeDelete(record)
-                );
-              }}
-            >
-              <FontAwesomeIcon icon={faTrash} />
-            </Button>
-          </Tooltip>
           <Tooltip title="Sửa">
             <Button
               onClick={() => {
-                nav(`/update-custumer-management/${record.id}`);
+                nav(`/update-custumer-management/${record.idUser}`);
               }}
               style={{
                 backgroundColor: "#0066CC",
@@ -140,50 +152,65 @@ export default function CustumerManagement() {
               <FontAwesomeIcon icon={faPenToSquare} />
             </Button>
           </Tooltip>
+          <Tooltip title="Hủy tài khoản">
+            <Button
+              style={{
+                backgroundColor: "red",
+                color: "white",
+                height: "35px",
+              }}
+              onClick={() => {
+                showConfirmationModal(
+                  "Bạn có chắc muốn cập nhập trạng thái khách hàng " +
+                    record.fullName +
+                    " không ? ",
+                  () => hanldeDelete(record)
+                );
+              }}
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </Button>
+          </Tooltip>
         </Space>
       ),
     },
   ];
 
-  const data = [
-    {
-      stt: 1,
-      id: "1",
-      fullName: "John Brown",
-      image:
-        "https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      status: "DANG_HOAT_DONG",
-    },
-    {
-      stt: 2,
-      id: "2",
-      fullName: "John Brown 2",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXsJKebNLSLsSC0PY6zUagtfpuYhkxk9jJYw&usqp=CAU",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      status: "NGUNG_HOAT_DONG",
-    },
-    {
-      stt: 2,
-      id: "3",
-      fullName: "John Brown 3",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQZljZ5zv6I2nQt902zFQrCZcHeZOQ5t9pe5Ky7Mpxa0aOPeYaMBpk2QdjSi27IKRK2w0&usqp=CAU",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      status: "NGUNG_HOAT_DONG",
-    },
-  ];
-
-  const handleUpdate = (data) => {
-    console.log(data);
+  const [data, setData] = useState([]);
+  const loadData = () => {
+    CustomerAPI.fetchAll()
+      .then((res) => {
+        // dispatch(SetEmployee(res.data.data));
+        setData(res.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   const hanldeDelete = (data) => {
     console.log(data);
+    const formData = new FormData();
+    formData.append(`id`, JSON.stringify(data.idUser));
+    formData.append(
+      "status",
+      JSON.stringify(
+        data.status === "DANG_SU_DUNG" ? "KHONG_SU_DUNG" : "DANG_SU_DUNG"
+      )
+    );
+    CustomerAPI.updateStatus(formData)
+      .then((res) => {
+        message.success("Cập nhập thành công.");
+        loadData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const hanldeClear = () => {
@@ -238,7 +265,7 @@ export default function CustumerManagement() {
             </Col>
             <Col span={10} style={{ marginLeft: "20px" }}>
               <Form.Item name="phoneNumber" label="Số điện thoại">
-                <Input placeholder="Nhập số điện thoại của khách hàng." />
+                <Input placeholder="Nhập số điện thoại của nhận viên." />
               </Form.Item>
               <Form.Item
                 name="age"
@@ -290,7 +317,7 @@ export default function CustumerManagement() {
           <Row justify="end" align="middle">
             <Button
               style={{
-                width: "100px",
+                width: "110px",
                 height: "40px",
                 margin: "0 10px 10px 10px ",
                 backgroundColor: "#3366CC",
@@ -300,11 +327,16 @@ export default function CustumerManagement() {
                 nav("/create-custumer-management");
               }}
             >
-              <FontAwesomeIcon icon={faPlus} />
+              <FontAwesomeIcon icon={faPlus} style={{ marginRight: "5px" }} />
               Thêm mới
             </Button>
           </Row>
-          <Table columns={columns} dataSource={data} rowKey="id" />
+          <Table
+            columns={columns}
+            dataSource={data}
+            rowKey="id"
+            pagination={{ pageSize: 5 }}
+          />
         </Card>
       </Form>
     </div>

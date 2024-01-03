@@ -28,6 +28,9 @@ import lombok.ToString;
 @NoArgsConstructor
 public class User extends PrimaryEntity {
 
+    @Column(name = "code")
+    private String code;
+
     @Column(name = "full_name")
     private String fullName;
 

@@ -15,4 +15,7 @@ public interface EmployeeService {
     EmployeeResponseImplDTO update (EmployeeRequest request , MultipartFile file);
 
     EmployeeResponse getOneById (String id);
+
+    EmployeeResponseImplDTO updateStatus (String id, String status);
+
 }

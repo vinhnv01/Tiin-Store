@@ -20,9 +20,7 @@ import {
   Tooltip,
 } from "antd";
 import { useEffect, useState } from "react";
-
 import "./CategoryManagement.model.css";
-import UpdateCategory from "./modal/updateCategory";
 import { CategoryAPI } from "../../../apis/category/category.api";
 import ConvertLongToDate from "../../../util/date/ConverLongToDate";
 import { useAppDispatch, useAppSelector } from "../../../app/hook";
@@ -31,6 +29,8 @@ import {
   SetCategory,
 } from "../../../app/reducer/Category.reducer";
 import ModalAddCategory from "./modal/addCategory";
+import ModalUpdateCategory from "./modal/updateCategory";
+import ModalDetailCategory from "./modal/DetailCategory";
 
 export default function CategoryManagement() {
   const [form] = Form.useForm();
@@ -98,6 +98,7 @@ export default function CategoryManagement() {
         <Space size="middle">
           <Tooltip title="Chi tiết thể loại">
             <Button
+              onClick={() => handleDetailClick(record)}
               style={{
                 backgroundColor: "#FF9900",
                 color: "white",
@@ -125,8 +126,8 @@ export default function CategoryManagement() {
   ];
 
   const data = useAppSelector(GetCategory);
-  const loadData = () => {
-    CategoryAPI.fetchAll()
+  const loadData = (search) => {
+    CategoryAPI.fetchAll(search)
       .then((res) => {
         dispatch(SetCategory(res.data.data));
       })
@@ -136,7 +137,7 @@ export default function CategoryManagement() {
   };
 
   useEffect(() => {
-    loadData();
+    loadData(search);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
@@ -146,10 +147,11 @@ export default function CategoryManagement() {
 
   const hanldeSearch = () => {
     const values = form.getFieldsValue();
-    setSearch({
-      fullName: values.fullName,
+    const data = {
+      name: values.fullName,
       status: values.status,
-    });
+    };
+    loadData(data);
   };
 
   // add category
@@ -166,9 +168,16 @@ export default function CategoryManagement() {
     setOpenUpdate(true);
   };
 
+  const [openDetail, setOpenDetail] = useState(false);
+  const handleDetailClick = (id) => {
+    setIdCategory(id);
+    setOpenDetail(true);
+  };
+
   const handleCancel = () => {
     setOpenAdd(false);
     setOpenUpdate(false);
+    setOpenDetail(false);
   };
 
   return (
@@ -195,10 +204,10 @@ export default function CategoryManagement() {
               <Form.Item label="Trạng thái" name="status">
                 <Select defaultValue={""}>
                   <Select.Option value="">Tất cả</Select.Option>
-                  <Select.Option value="DANG_HOAT_DONG">
+                  <Select.Option value="DANG_SU_DUNG">
                     Đang sử dụng
                   </Select.Option>
-                  <Select.Option value="NGUNG_HOAT_DONG">
+                  <Select.Option value="KHONG_SU_DUNG">
                     Ngừng sử dụng
                   </Select.Option>
                 </Select>
@@ -262,9 +271,14 @@ export default function CategoryManagement() {
             pagination={{ pageSize: 5 }}
           />
         </Card>
-        <UpdateCategory
+        <ModalUpdateCategory
           category={idCategory}
           visible={openUpdate}
+          onCancel={handleCancel}
+        />
+        <ModalDetailCategory
+          category={idCategory}
+          visible={openDetail}
           onCancel={handleCancel}
         />
       </Form>

@@ -10,6 +10,7 @@ import lombok.Setter;
 public class EmployeeResponseImplDTO {
     private Integer stt;
     private String idUser;
+    private String code;
     private String email;
     private Long createdDate;
     private Long lastModifiedDate;
@@ -29,6 +30,7 @@ public class EmployeeResponseImplDTO {
     public EmployeeResponseImplDTO(User user, Address address) {
         this.idUser = user.getId();
         this.email = user.getEmail();
+        this.code = user.getCode();
         this.createdDate = user.getCreatedDate();
         this.lastModifiedDate = user.getLastModifiedDate();
         this.avata = user.getAvata();
@@ -43,6 +45,21 @@ public class EmployeeResponseImplDTO {
         this.district = address.getDistrict();
         this.ward = address.getWard();
         this.line = address.getLine();
+    }
+
+    public EmployeeResponseImplDTO(User user) {
+        this.idUser = user.getId();
+        this.email = user.getEmail();
+        this.code = user.getCode();
+        this.createdDate = user.getCreatedDate();
+        this.lastModifiedDate = user.getLastModifiedDate();
+        this.avata = user.getAvata();
+        this.phoneNumber = user.getPhoneNumber();
+        this.status = user.getStatus().name();
+        this.dateOfBirth = user.getDateOfBirth();
+        this.fullName = user.getFullName();
+        this.gender = user.getGender();
+        this.citizenIdentity = user.getCitizenIdentity();
     }
 
 }

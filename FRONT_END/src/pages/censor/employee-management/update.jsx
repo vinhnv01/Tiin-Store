@@ -95,19 +95,21 @@ export default function UpdateEmployeeManagement() {
     form.validateFields().then((values) => {
       const data = {
         ...values,
-        dateOfBirth: values.birthday
-          ? new Date(values.birthday).getTime()
+        dateOfBirth: values.dateOfBirth
+          ? new Date(values.dateOfBirth).getTime()
           : null,
         provinceId: province === null ? null : province.key,
         districtId: district === null ? null : district.key,
         wardId: ward === null ? null : ward.key,
+        idUser: id,
       };
       const formData = new FormData();
       formData.append(`file`, fileImage);
       formData.append("request", JSON.stringify(data));
-      EmployeeAPI.create(formData)
+      console.log(data);
+      EmployeeAPI.update(formData)
         .then(() => {
-          message.success("Thêm nhân viên thành công.");
+          message.success("Chỉnh sửa nhân viên thành công.");
           nav("/employee-management");
         })
         .catch((error) => {

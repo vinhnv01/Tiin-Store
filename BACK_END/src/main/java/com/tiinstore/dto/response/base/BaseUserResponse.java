@@ -10,6 +10,9 @@ public interface BaseUserResponse {
     @Value("#{target.idUser}")
     String getIdUser();
 
+    @Value("#{target.code}")
+    String getCode();
+
     @Value("#{target.email}")
     String getEmail();
 

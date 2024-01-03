@@ -1,11 +1,16 @@
-import { Button, Col, Form, Input, Modal, Row, Select } from "antd";
-import { useEffect, useState } from "react";
+import { Button, Col, Form, Input, Modal, Row, Select, message } from "antd";
+import { useEffect } from "react";
+import showConfirmationModal from "../../../../util/modal-confirm/ModalConfirm";
+import { CategoryAPI } from "../../../../apis/category/category.api";
+import { useAppDispatch } from "../../../../app/hook";
+import { UpdateCategory } from "../../../../app/reducer/Category.reducer";
 
-export default function UpdateCategory({ category, visible, onCancel }) {
+export default function ModalUpdateCategory({ category, visible, onCancel }) {
   const [form] = Form.useForm();
-
+  const dispatch = useAppDispatch();
   const getOneById = () => {
     if (category !== null) {
+      console.log(category);
       form.setFieldsValue({
         name: category.name,
         status: category.status,
@@ -15,6 +20,7 @@ export default function UpdateCategory({ category, visible, onCancel }) {
 
   useEffect(() => {
     getOneById();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
   const handleOk = () => {
@@ -22,6 +28,18 @@ export default function UpdateCategory({ category, visible, onCancel }) {
       .validateFields()
       .then((values) => {
         console.log(values);
+        const data = {
+          ...values,
+          id: category.id,
+        };
+        CategoryAPI.update(data)
+          .then((res) => {
+            dispatch(UpdateCategory(res.data.data));
+            message.success("Cập nhập thành công.");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
         form.resetFields();
         onCancel();
       })
@@ -43,7 +61,13 @@ export default function UpdateCategory({ category, visible, onCancel }) {
           <Button key="cancel" onClick={handleCancel}>
             Hủy
           </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() =>
+              showConfirmationModal("Bạn có chắc muốn cập nhập ?", handleOk)
+            }
+          >
             Cập nhật
           </Button>,
         ]}
@@ -88,7 +112,6 @@ export default function UpdateCategory({ category, visible, onCancel }) {
                 wrapperCol={{ span: 15 }}
               >
                 <Select defaultValue={""} style={{ textAlign: "center" }}>
-                  <Select.Option value="">Chọn trạng thái</Select.Option>
                   <Select.Option value="DANG_SU_DUNG">
                     Đang sử dung
                   </Select.Option>

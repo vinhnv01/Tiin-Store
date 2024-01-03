@@ -7,12 +7,16 @@ import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import QRScannerModal from "../../../util/QR-code/BarcodeScanner ";
 import showConfirmationModal from "../../../util/modal-confirm/ModalConfirm";
 import { AddressApi } from "../../../apis/address/address.api";
+import { EmployeeAPI } from "../../../apis/user/Employee.api";
+import { useNavigate } from "react-router-dom";
+import { CustomerAPI } from "../../../apis/user/Customer.api";
 export default function AddCustumerManagement() {
   const [form] = Form.useForm();
   const [fileImage, setFileIamge] = useState(null);
   const [listProvince, setListProvince] = useState([]);
   const [listDistricts, setListDistricts] = useState([]);
   const [listWard, setListWard] = useState([]);
+  const nav = useNavigate();
 
   const handleFileUpload = (fileData) => {
     setFileIamge(fileData);
@@ -34,6 +38,10 @@ export default function AddCustumerManagement() {
     });
   };
 
+  const [province, setProvince] = useState(null);
+  const [district, setDistrict] = useState(null);
+  const [ward, setWard] = useState(null);
+
   const handleProvinceChange = (value, valueProvince) => {
     form.setFieldsValue({ provinceId: valueProvince.valueProvince });
     AddressApi.fetchAllProvinceDistricts(valueProvince.valueProvince).then(
@@ -41,6 +49,7 @@ export default function AddCustumerManagement() {
         setListDistricts(res.data.data);
       }
     );
+    setProvince(valueProvince);
   };
 
   const handleDistrictChange = (value, valueDistrict) => {
@@ -48,15 +57,27 @@ export default function AddCustumerManagement() {
     AddressApi.fetchAllProvinceWard(valueDistrict.valueDistrict).then((res) => {
       setListWard(res.data.data);
     });
+    setDistrict(valueDistrict);
   };
 
   const handleWardChange = (value, valueWard) => {
     form.setFieldsValue({ wardCode: valueWard.valueWard });
+    setWard(valueWard);
   };
 
   useEffect(() => {
     loadDataProvince();
   }, []);
+
+  // QR code
+  const [qrResult, setQrResult] = useState("");
+
+  const handleQRResult = (result) => {
+    if (result != null) {
+      setShowModal(false);
+    }
+    setQrResult(result);
+  };
 
   const handleSuccess = () => {
     form
@@ -65,10 +86,28 @@ export default function AddCustumerManagement() {
         if (fileImage === null) {
           message.error("Vui lòng chọn ảnh đại diện.");
         }
-
-        console.log(values);
+        const data = {
+          ...values,
+          dateOfBirth: values.birthday
+            ? new Date(values.birthday).getTime()
+            : null,
+          provinceId: province.key,
+          districtId: district.key,
+          wardId: ward.key,
+        };
+        const formData = new FormData();
+        formData.append(`file`, fileImage);
+        formData.append("request", JSON.stringify(data));
+        CustomerAPI.create(formData)
+          .then((result) => {
+            message.success("Thêm khách hàng thành công.");
+            nav("/custumer-management");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
-      .catch((error) => {
+      .catch(() => {
         message.error("Vui lòng điền đủ thông tin vào tất cả các trường.");
       });
   };
@@ -110,6 +149,13 @@ export default function AddCustumerManagement() {
                     <FontAwesomeIcon icon={faQrcode} />
                     <span style={{ marginLeft: "10px" }}>QR-Căn cước</span>
                   </Button>
+                  {showModal && (
+                    <QRScannerModal
+                      visible={showModal}
+                      onCancel={handleModalClose}
+                      onQRResult={handleQRResult}
+                    />
+                  )}
                   <Button
                     onClick={() =>
                       showConfirmationModal(
@@ -127,12 +173,6 @@ export default function AddCustumerManagement() {
                   >
                     Hoàn tất
                   </Button>
-                  {showModal && (
-                    <QRScannerModal
-                      visible={showModal}
-                      onCancel={handleModalClose}
-                    />
-                  )}
                 </Col>
               </Row>
               <Row>
@@ -165,7 +205,7 @@ export default function AddCustumerManagement() {
                     />
                   </Form.Item>
                   <Form.Item
-                    name="card"
+                    name="citizenIdentity"
                     label="Căn cước"
                     tooltip="Căn cước công dân của bạn là gì?"
                     rules={[
@@ -200,8 +240,8 @@ export default function AddCustumerManagement() {
                   >
                     <Select defaultValue={""}>
                       <Select.Option value="">Chọn giới tính</Select.Option>
-                      <Select.Option value="NAM">Nam</Select.Option>
-                      <Select.Option value="NU">Nữ</Select.Option>
+                      <Select.Option value="true">Nam</Select.Option>
+                      <Select.Option value="false">Nữ</Select.Option>
                     </Select>
                   </Form.Item>
                   <Form.Item

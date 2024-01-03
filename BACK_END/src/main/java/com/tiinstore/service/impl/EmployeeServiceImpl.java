@@ -54,6 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         // todo: add user
         User add = new User();
         add.setFullName(request.getFullName());
+        add.setCode(new RandomNumberGenerator().randomToString("NV",99999999));
         add.setEmail(request.getEmail());
         add.setGender(request.getGender());
         add.setRole(Roles.ROLE_EMLOYEE);
@@ -89,9 +90,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public EmployeeResponseImplDTO update(EmployeeRequest request, MultipartFile file) {
 
-        String password = new RandomNumberGenerator().randomPassword();
-        emailService.sendEmailPasword(request.getEmail(), "Mật khẩu của bạn là ", password);
-
         Optional<User> optional = userRepository.findById(request.getIdUser());
         if (!optional.isPresent()) {
             throw new RestApiException("Người dùng không tồn tại.");
@@ -107,13 +105,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         update.setCitizenIdentity(request.getCitizenIdentity());
         update.setStatus(Status.DANG_SU_DUNG);
         update.setDateOfBirth(request.getDateOfBirth());
-        update.setAvata(file.isEmpty() ? optional.get().getAvata() : uploadImageToCloudinary.uploadImage(file));
-        update.setPassword(password);
+        update.setAvata(file == null ? optional.get().getAvata() : uploadImageToCloudinary.uploadImage(file));
         update.setPhoneNumber(request.getPhoneNumber());
         userRepository.save(update);
 
         // todo : add address
-        Address address = addressRepository.findByUserAnAndStatus(update.getId(),Status.DANG_SU_DUNG.name());
+        Address address = addressRepository.findByUserAndStatus(update.getId());
         address.setDistrict(request.getDistrict());
         address.setLine(request.getLine());
         address.setWard(request.getWard());
@@ -132,10 +129,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse getOneById(String id) {
+        EmployeeResponse optional = userRepository.findByIdEmployee(id);
+        if (optional == null) {
+            throw new RestApiException("Người dùng không tồn tại.");
+        }
+        return optional;
+    }
+
+    @Override
+    public EmployeeResponseImplDTO updateStatus(String id , String status) {
         Optional<User> optional = userRepository.findById(id);
         if (!optional.isPresent()) {
             throw new RestApiException("Người dùng không tồn tại.");
         }
-        return userRepository.findByIdUser(id);
+        optional.get().setStatus(Status.DANG_SU_DUNG.name().equals(status) ? Status.DANG_SU_DUNG : Status.KHONG_SU_DUNG);
+        userRepository.save(optional.get());
+        return new EmployeeResponseImplDTO(optional.get());
     }
 }

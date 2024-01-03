@@ -20,6 +20,7 @@ import {
   Table,
   Tag,
   Tooltip,
+  message,
 } from "antd";
 import showConfirmationModal from "../../../util/modal-confirm/ModalConfirm";
 import { useEffect, useState } from "react";
@@ -80,6 +81,13 @@ export default function EmployeeManagement() {
           src={text}
         />
       ),
+    },
+    {
+      title: "Mã nhân viên",
+      dataIndex: "code",
+      key: "code",
+      align: "center",
+      render: (text) => <span>{text}</span>,
     },
     {
       title: <div style={{ textAlign: "center" }}>Họ và tên</div>,
@@ -156,7 +164,7 @@ export default function EmployeeManagement() {
               }}
               onClick={() => {
                 showConfirmationModal(
-                  "Bạn có chắc muốn xóa nhân viên " +
+                  "Bạn có chắc muốn cập nhập trạng thái nhân viên " +
                     record.fullName +
                     " không ? ",
                   () => hanldeDelete(record)
@@ -190,6 +198,22 @@ export default function EmployeeManagement() {
 
   const hanldeDelete = (data) => {
     console.log(data);
+    const formData = new FormData();
+    formData.append(`id`, JSON.stringify(data.idUser));
+    formData.append(
+      "status",
+      JSON.stringify(
+        data.status === "DANG_SU_DUNG" ? "KHONG_SU_DUNG" : "DANG_SU_DUNG"
+      )
+    );
+    EmployeeAPI.updateStatus(formData)
+      .then((res) => {
+        message.success("Cập nhập thành công.");
+        loadData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const hanldeClear = () => {

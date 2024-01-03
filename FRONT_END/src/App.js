@@ -18,6 +18,9 @@ import BillManagement from "./pages/censor/bill/BillManagement";
 import { GetLoading } from "./app/reducer/Loading.reducer";
 import { useAppSelector } from "./app/hook";
 import loading from "./../src/assets/s_discount_icon.png";
+import BrandManagement from "./pages/censor/brand-management/BrandManagement";
+import MaterialManagement from "./pages/censor/material-management/MaterialManagement";
+import SoleManagement from "./pages/censor/sole-management/SoleManagement";
 
 function App() {
   const isLoading = useAppSelector(GetLoading);
@@ -127,6 +130,36 @@ function App() {
                 <AuthGuard>
                   <DashboardCensor>
                     <CategoryManagement />
+                  </DashboardCensor>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/material-management"
+              element={
+                <AuthGuard>
+                  <DashboardCensor>
+                    <MaterialManagement />
+                  </DashboardCensor>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/sole-management"
+              element={
+                <AuthGuard>
+                  <DashboardCensor>
+                    <SoleManagement />
+                  </DashboardCensor>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/brand-management"
+              element={
+                <AuthGuard>
+                  <DashboardCensor>
+                    <BrandManagement />
                   </DashboardCensor>
                 </AuthGuard>
               }

@@ -14,6 +14,8 @@ public class BaseUser {
 
     private String fullName;
 
+    private String code;
+
     private Long dateOfBirth;
 
     private String phoneNumber;

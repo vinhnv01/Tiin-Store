@@ -2,6 +2,7 @@ import { Button, Col, Form, Input, Modal, Row, message } from "antd";
 import { CategoryAPI } from "../../../../apis/category/category.api";
 import { useAppDispatch } from "../../../../app/hook";
 import { CreateCategory } from "../../../../app/reducer/Category.reducer";
+import showConfirmationModal from "../../../../util/modal-confirm/ModalConfirm";
 
 export default function ModalAddCategory({ visible, onCancel }) {
   const [form] = Form.useForm();
@@ -39,7 +40,9 @@ export default function ModalAddCategory({ visible, onCancel }) {
           <Button key="cancel" onClick={onCancel}>
             Hủy
           </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
+          <Button key="submit" type="primary" onClick={() =>
+              showConfirmationModal("Bạn có chắc muốn thêm ?", handleOk)
+            }>
             Thêm
           </Button>,
         ]}
