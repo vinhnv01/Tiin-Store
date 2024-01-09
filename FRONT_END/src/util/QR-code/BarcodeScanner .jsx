@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { Modal } from "antd";
+import React, { useState } from "react";
+import { Button, Modal } from "antd";
 import { useZxing } from "react-zxing";
 
-export default function QRScannerModal({ visible, onCancel, onQRResult }) {
+export default function QRScannerModal({
+  visible,
+  onCancel,
+  onQRResult,
+  scannerModalKey,
+}) {
   const [result, setResult] = useState("");
 
   const RenderVideo = () => {
     const { ref } = useZxing({
       onDecodeResult(result) {
         setResult(result.getText());
-        onQRResult(result.getText());
+        onQRResult(result.getText(), scannerModalKey);
       },
       paused: !visible,
     });
@@ -27,7 +32,11 @@ export default function QRScannerModal({ visible, onCancel, onQRResult }) {
       visible={visible}
       onOk={onCancel}
       onCancel={onCancel}
-      okText="Hủy"
+      footer={[
+        <Button key="cancel" onClick={onCancel}>
+          Hủy
+        </Button>,
+      ]}
       width={400}
     >
       <div

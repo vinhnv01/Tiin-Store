@@ -2,6 +2,7 @@ package com.tiinstore.service.impl;
 
 import com.tiinstore.dto.request.user.CustomerRequest;
 import com.tiinstore.dto.request.user.EmployeeRequest;
+import com.tiinstore.dto.request.user.FinterUserRequest;
 import com.tiinstore.dto.response.CustomerRespone;
 import com.tiinstore.dto.response.EmployeeResponse;
 import com.tiinstore.dto.response.impldto.CustomerResponseImplDTO;
@@ -43,8 +44,8 @@ public class CustomerServiceImpl implements CustomerService {
     private EmailServiceImpl emailService;
 
     @Override
-    public List<CustomerRespone> getAll() {
-        return userRepository.getAllCustomer();
+    public List<CustomerRespone> getAll(FinterUserRequest rep) {
+        return userRepository.getAllCustomer(rep);
     }
 
     @Override

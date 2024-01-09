@@ -1,6 +1,8 @@
 package com.tiinstore.service.impl;
 
+import com.tiinstore.dto.request.product.FinterProductRequest;
 import com.tiinstore.dto.request.user.EmployeeRequest;
+import com.tiinstore.dto.request.user.FinterUserRequest;
 import com.tiinstore.dto.response.EmployeeResponse;
 import com.tiinstore.dto.response.impldto.EmployeeResponseImplDTO;
 import com.tiinstore.entity.Address;
@@ -39,8 +41,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmailServiceImpl emailService;
 
     @Override
-    public List<EmployeeResponse> getAll() {
-        return userRepository.getAllEmployees();
+    public List<EmployeeResponse> getAll(FinterUserRequest request) {
+        return userRepository.getAllEmployees(request);
     }
 
     @Override

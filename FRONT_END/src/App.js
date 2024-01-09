@@ -21,6 +21,11 @@ import loading from "./../src/assets/s_discount_icon.png";
 import BrandManagement from "./pages/censor/brand-management/BrandManagement";
 import MaterialManagement from "./pages/censor/material-management/MaterialManagement";
 import SoleManagement from "./pages/censor/sole-management/SoleManagement";
+import AddProductDetail from "./pages/censor/productdetail-management/AddProductDetail";
+import ListProductDetail from "./pages/censor/productdetail-management/list-product-detai/ListProductDetail";
+import UpdateProductDetail from "./pages/censor/productdetail-management/UpdateProductDetail";
+import PromotionManagement from "./pages/censor/promotion-management/PromotionManagement";
+import AddPromotion from "./pages/censor/promotion-management/Add";
 
 function App() {
   const isLoading = useAppSelector(GetLoading);
@@ -60,6 +65,36 @@ function App() {
                 <AuthGuard>
                   <DashboardCensor>
                     <ProductDetailManagement />
+                  </DashboardCensor>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="add-product-detail-management"
+              element={
+                <AuthGuard>
+                  <DashboardCensor>
+                    <AddProductDetail />
+                  </DashboardCensor>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="update-product-detail-management/:id"
+              element={
+                <AuthGuard>
+                  <DashboardCensor>
+                    <UpdateProductDetail />
+                  </DashboardCensor>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="list-variant-product-detail"
+              element={
+                <AuthGuard>
+                  <DashboardCensor>
+                    <ListProductDetail />
                   </DashboardCensor>
                 </AuthGuard>
               }
@@ -170,6 +205,26 @@ function App() {
                 <AuthGuard>
                   <DashboardCensor>
                     <BillManagement />
+                  </DashboardCensor>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/promotion-management"
+              element={
+                <AuthGuard>
+                  <DashboardCensor>
+                    <PromotionManagement />
+                  </DashboardCensor>
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/add-promotion-management"
+              element={
+                <AuthGuard>
+                  <DashboardCensor>
+                    <AddPromotion />
                   </DashboardCensor>
                 </AuthGuard>
               }

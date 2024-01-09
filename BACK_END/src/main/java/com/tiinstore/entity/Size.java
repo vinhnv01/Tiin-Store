@@ -26,7 +26,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Size extends PrimaryEntity {
 
-    private Integer name;
+    private String name;
 
     @Enumerated(EnumType.STRING)
     private Status status;

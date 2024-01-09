@@ -2,6 +2,7 @@ package com.tiinstore.service;
 
 import com.tiinstore.dto.request.user.CustomerRequest;
 import com.tiinstore.dto.request.user.EmployeeRequest;
+import com.tiinstore.dto.request.user.FinterUserRequest;
 import com.tiinstore.dto.response.CustomerRespone;
 import com.tiinstore.dto.response.EmployeeResponse;
 import com.tiinstore.dto.response.impldto.CustomerResponseImplDTO;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public interface CustomerService {
 
-    List<CustomerRespone> getAll();
+    List<CustomerRespone> getAll(FinterUserRequest rep);
 
     CustomerResponseImplDTO add(CustomerRequest request, MultipartFile file);
 

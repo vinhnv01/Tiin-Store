@@ -70,7 +70,6 @@ export default function AddEmployeeManagement() {
 
   // QR code
   const [qrResult, setQrResult] = useState("");
-
   const handleQRResult = (result) => {
     if (result != null) {
       setShowModal(false);

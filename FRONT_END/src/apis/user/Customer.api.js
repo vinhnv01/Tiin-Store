@@ -1,11 +1,11 @@
 import { requestAdmin } from "../../helper/request";
 
 export class CustomerAPI {
-  static fetchAll = () => {
+  static fetchAll = (filter) => {
     return requestAdmin({
       method: "GET",
       url: `/admin/customer`,
-      //   params: filter,
+      params: filter,
     });
   };
 

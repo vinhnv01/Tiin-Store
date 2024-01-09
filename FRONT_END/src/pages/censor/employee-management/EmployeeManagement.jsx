@@ -180,8 +180,8 @@ export default function EmployeeManagement() {
   ];
 
   const [data, setData] = useState([]);
-  const loadData = () => {
-    EmployeeAPI.fetchAll()
+  const loadData = (search) => {
+    EmployeeAPI.fetchAll(search)
       .then((res) => {
         dispatch(SetEmployee(res.data.data));
         setData(res.data.data);
@@ -222,13 +222,13 @@ export default function EmployeeManagement() {
 
   const hanldeSearch = () => {
     const values = form.getFieldsValue();
-    setSearch({
+    const data = {
       fullName: values.fullName,
       phoneNumber: values.phoneNumber,
       status: values.status,
-      ageMin: values.age[0],
-      ageMax: values.age[1],
-    });
+    };
+    console.log(data);
+    loadData(data);
   };
 
   return (
@@ -257,10 +257,10 @@ export default function EmployeeManagement() {
               >
                 <Select defaultValue={""}>
                   <Select.Option value="">Tất cả</Select.Option>
-                  <Select.Option value="DANG_HOAT_DONG">
+                  <Select.Option value="DANG_SU_DUNG">
                     Đang hoạt động
                   </Select.Option>
-                  <Select.Option value="NGUNG_HOAT_DONG">
+                  <Select.Option value="KHONG_SU_DUNG">
                     Ngừng hoạt động
                   </Select.Option>
                 </Select>

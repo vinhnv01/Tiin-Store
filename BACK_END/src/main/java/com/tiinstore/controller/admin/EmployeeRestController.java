@@ -2,6 +2,7 @@ package com.tiinstore.controller.admin;
 
 import com.google.gson.Gson;
 import com.tiinstore.dto.request.user.EmployeeRequest;
+import com.tiinstore.dto.request.user.FinterUserRequest;
 import com.tiinstore.service.EmployeeService;
 import com.tiinstore.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,9 @@ public class EmployeeRestController {
     private EmployeeService employeeService;
 
     @GetMapping()
-    public ResponseObject view() {
-        return new ResponseObject(employeeService.getAll());
+    public ResponseObject view(FinterUserRequest request) {
+        System.out.println(request);
+        return new ResponseObject(employeeService.getAll(request));
     }
 
     @PostMapping()

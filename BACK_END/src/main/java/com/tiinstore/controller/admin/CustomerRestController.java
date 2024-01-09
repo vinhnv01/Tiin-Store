@@ -3,6 +3,7 @@ package com.tiinstore.controller.admin;
 import com.google.gson.Gson;
 import com.tiinstore.dto.request.user.CustomerRequest;
 import com.tiinstore.dto.request.user.EmployeeRequest;
+import com.tiinstore.dto.request.user.FinterUserRequest;
 import com.tiinstore.service.CustomerService;
 import com.tiinstore.service.EmployeeService;
 import com.tiinstore.util.ResponseObject;
@@ -26,8 +27,8 @@ public class CustomerRestController {
     private CustomerService customerService;
 
     @GetMapping()
-    public ResponseObject view() {
-        return new ResponseObject(customerService.getAll());
+    public ResponseObject view(FinterUserRequest rep) {
+        return new ResponseObject(customerService.getAll(rep));
     }
 
     @PostMapping()

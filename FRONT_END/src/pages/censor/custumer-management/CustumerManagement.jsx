@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import "./CustumerManagement.model.css";
 import { useAppDispatch } from "../../../app/hook";
 import { CustomerAPI } from "../../../apis/user/Customer.api";
+import { SetEmployee } from "../../../app/reducer/Employee.reducer";
 
 export default function CustumerManagement() {
   const [form] = Form.useForm();
@@ -177,8 +178,8 @@ export default function CustumerManagement() {
   ];
 
   const [data, setData] = useState([]);
-  const loadData = () => {
-    CustomerAPI.fetchAll()
+  const loadData = (search) => {
+    CustomerAPI.fetchAll(search)
       .then((res) => {
         // dispatch(SetEmployee(res.data.data));
         setData(res.data.data);
@@ -219,13 +220,12 @@ export default function CustumerManagement() {
 
   const hanldeSearch = () => {
     const values = form.getFieldsValue();
-    setSearch({
+    const data = {
       fullName: values.fullName,
       phoneNumber: values.phoneNumber,
       status: values.status,
-      ageMin: values.age[0],
-      ageMax: values.age[1],
-    });
+    };
+    loadData(data);
   };
 
   return (
@@ -254,10 +254,10 @@ export default function CustumerManagement() {
               >
                 <Select defaultValue={""}>
                   <Select.Option value="">Tất cả</Select.Option>
-                  <Select.Option value="DANG_HOAT_DONG">
+                  <Select.Option value="DANG_SU_DUNG">
                     Đang hoạt động
                   </Select.Option>
-                  <Select.Option value="NGUNG_HOAT_DONG">
+                  <Select.Option value="KHONG_SU_DUNG">
                     Ngừng hoạt động
                   </Select.Option>
                 </Select>

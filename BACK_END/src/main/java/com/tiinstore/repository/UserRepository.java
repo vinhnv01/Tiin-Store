@@ -1,5 +1,7 @@
 package com.tiinstore.repository;
 
+import com.tiinstore.dto.request.product.FinterProductRequest;
+import com.tiinstore.dto.request.user.FinterUserRequest;
 import com.tiinstore.dto.response.CustomerRespone;
 import com.tiinstore.dto.response.EmployeeResponse;
 import com.tiinstore.entity.User;
@@ -37,10 +39,22 @@ public interface UserRepository extends JpaRepository<User, String> {
                  a.line AS line
             FROM user u
             LEFT JOIN address a on u.id = a.id_user
-            WHERE a.status = 'DANG_SU_DUNG' AND u.role = 'ROLE_EMLOYEE'
+            WHERE u.role = 'ROLE_EMLOYEE' 
+            AND
+                ( :#{#rep.fullName} IS NULL 
+                OR :#{#rep.fullName} LIKE '' 
+                OR u.full_name LIKE %:#{#rep.fullName}% ) 
+            AND 
+                ( :#{#rep.status} IS NULL 
+                OR :#{#rep.status} LIKE '' 
+                OR u.status LIKE :#{#rep.status} )
+            AND 
+                ( :#{#rep.phoneNumber} IS NULL 
+                OR :#{#rep.phoneNumber} LIKE '' 
+                OR u.phone_number LIKE %:#{#rep.phoneNumber}% )
             ORDER BY u.last_modified_date DESC 
             """, nativeQuery = true)
-    List<EmployeeResponse> getAllEmployees();
+    List<EmployeeResponse> getAllEmployees(FinterUserRequest rep);
 
     @Query(value = """
             SELECT
@@ -90,10 +104,22 @@ public interface UserRepository extends JpaRepository<User, String> {
                  a.line AS line
             FROM user u
             LEFT JOIN address a on u.id = a.id_user
-            WHERE a.status = 'DANG_SU_DUNG' AND u.role = 'ROLE_USER'
+            WHERE  u.role = 'ROLE_USER' 
+            AND
+                ( :#{#rep.fullName} IS NULL 
+                OR :#{#rep.fullName} LIKE '' 
+                OR u.full_name LIKE %:#{#rep.fullName}% ) 
+            AND 
+                ( :#{#rep.status} IS NULL 
+                OR :#{#rep.status} LIKE '' 
+                OR u.status LIKE :#{#rep.status} )
+            AND 
+                ( :#{#rep.phoneNumber} IS NULL 
+                OR :#{#rep.phoneNumber} LIKE '' 
+                OR u.phone_number LIKE %:#{#rep.phoneNumber}% )
             ORDER BY u.last_modified_date DESC 
             """, nativeQuery = true)
-    List<CustomerRespone> getAllCustomer();
+    List<CustomerRespone> getAllCustomer(FinterUserRequest rep);
 
     @Query(value = """
             SELECT

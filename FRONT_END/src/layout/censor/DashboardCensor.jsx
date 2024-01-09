@@ -94,7 +94,7 @@ const DashboardCensor = ({ children }) => {
             className="menu-item"
             icon={<FontAwesomeIcon icon={faKey} style={{ color: "white" }} />}
           >
-            <Link to="/dashboard" style={{ color: "white" }}>
+            <Link to="/promotion-management" style={{ color: "white" }}>
               Quản Lý khuyến mại
             </Link>
           </Menu.Item>
